@@ -1,7 +1,7 @@
 /**
  * Application Logic
  * Sistem Informasi Pencatatan Aset Daerah Idle (SIP-IDLE PROV)
- * BPKAD Pemerintah Provinsi Sumatera Barat
+ * BPKAD Pemerintah Provinsi Lampung
  */
 
 // State Management
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initStorage() {
-  const stored = localStorage.getItem('sip_idle_assets_v1');
+  const stored = localStorage.getItem('sip_idle_assets_lampung_v2');
   if (stored) {
     try {
       appState.assets = JSON.parse(stored);
@@ -95,7 +95,7 @@ function initStorage() {
 }
 
 function saveToStorage() {
-  localStorage.setItem('sip_idle_assets_v1', JSON.stringify(appState.assets));
+  localStorage.setItem('sip_idle_assets_lampung_v2', JSON.stringify(appState.assets));
 }
 
 function populateDropdowns() {
@@ -490,16 +490,16 @@ function initLeafletMap() {
     return;
   }
 
-  // Centered on Sumatera Barat
+  // Centered on Provinsi Lampung
   appState.mapInstance = L.map('map', {
-    center: [-0.65, 100.45],
-    zoom: 8,
+    center: [-5.15, 105.15],
+    zoom: 8.5,
     zoomControl: true
   });
 
   // OpenStreetMap Tile Layer
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> kontributor | BPKAD Sumbar',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> kontributor | BPKAD Provinsi Lampung',
     maxZoom: 18
   }).addTo(appState.mapInstance);
 
@@ -851,11 +851,11 @@ function openFormModal(assetId = null) {
     }
   } else {
     formTitle.textContent = "Catat Objek Aset Daerah Idle Baru";
-    // Generate new random code and default coordinates around Padang
+    // Generate new random code and default coordinates around Bandar Lampung
     const randomNum = Math.floor(100 + Math.random() * 900);
     document.getElementById('form-kode').value = `01.01.11.08.${randomNum}`;
-    document.getElementById('form-lat').value = "-0.9471";
-    document.getElementById('form-lng').value = "100.4172";
+    document.getElementById('form-lat').value = "-5.3852";
+    document.getElementById('form-lng').value = "105.2789";
     document.getElementById('form-tahun').value = "2020";
     document.getElementById('form-foto-url').value = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=80";
   }
@@ -934,11 +934,11 @@ function confirmDeleteAsset(assetId) {
 }
 
 function resetDefaultData() {
-  if (confirm('Setel ulang seluruh data ke database contoh BPKAD Pemprov Sumbar? Seluruh perubahan lokal akan dikembalikan.')) {
+  if (confirm('Setel ulang seluruh data ke database contoh BPKAD Pemprov Lampung? Seluruh perubahan lokal akan dikembalikan.')) {
     appState.assets = [...DEFAULT_ASSETS];
     saveToStorage();
     renderAllViews();
-    showToast('Data default berhasil dipulihkan');
+    showToast('Data default Pemprov Lampung berhasil dipulihkan');
   }
 }
 
@@ -1045,7 +1045,7 @@ function handleInterestSubmit(e) {
   const nama = document.getElementById('interest-nama').value;
   const institusi = document.getElementById('interest-institusi').value;
   
-  showToast(`Terima kasih Bapak/Ibu ${nama} (${institusi}). Surat Pernyataan Minat (Letter of Intent) Anda telah terkirim ke Sekretariat Tim Pemanfaatan BMD BPKAD Provinsi Sumatera Barat!`);
+  showToast(`Terima kasih Bapak/Ibu ${nama} (${institusi}). Surat Pernyataan Minat (Letter of Intent) Anda telah terkirim ke Sekretariat Tim Pemanfaatan BMD BPKAD Provinsi Lampung!`);
   closeInterestModal();
 }
 
@@ -1176,7 +1176,7 @@ function exportToCSV() {
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
-  link.setAttribute("download", `Rekap_Aset_Daerah_Idle_Pemprov_Sumbar_${new Date().toISOString().slice(0, 10)}.csv`);
+  link.setAttribute("download", `Rekap_Aset_Daerah_Idle_Pemprov_Lampung_${new Date().toISOString().slice(0, 10)}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -1197,24 +1197,24 @@ function printOfficialReport() {
 
   printArea.innerHTML = `
     <div style="font-family: 'Times New Roman', serif; color: black; line-height: 1.3;">
-      <!-- KOP RESMI PEMERINTAH PROVINSI -->
+      <!-- KOP RESMI PEMERINTAH PROVINSI LAMPUNG -->
       <div style="display: flex; align-items: center; border-bottom: 3px double #000; padding-bottom: 12px; margin-bottom: 20px;">
-        <img src="https://ditjenpktn.kemendag.go.id/storage/webconfig/V6QvuT4trifcVUV7Zh7ZTKkezTudgcjGtkKTTbNl.png" style="width: 75px; height: auto; margin-right: 20px;" alt="Logo Prov">
+        <img src="https://ditjenpktn.kemendag.go.id/storage/webconfig/V6QvuT4trifcVUV7Zh7ZTKkezTudgcjGtkKTTbNl.png" style="width: 75px; height: auto; margin-right: 20px;" alt="Logo Lampung">
         <div style="text-align: center; flex: 1;">
-          <h3 style="margin: 0; font-size: 16pt; font-weight: bold; letter-spacing: 1px;">PEMERINTAH PROVINSI SUMATERA BARAT</h3>
+          <h3 style="margin: 0; font-size: 16pt; font-weight: bold; letter-spacing: 1px;">PEMERINTAH PROVINSI LAMPUNG</h3>
           <h2 style="margin: 3px 0; font-size: 18pt; font-weight: bold;">BADAN PENGELOLAAN KEUANGAN DAN ASET DAERAH</h2>
-          <p style="margin: 0; font-size: 10pt; font-style: italic;">Jl. Jenderal Sudirman No. 43, Kota Padang, Sumatera Barat 25129</p>
-          <p style="margin: 0; font-size: 10pt;">Telepon: (0751) 31542 | Pos-el: bpkad@sumbarprov.go.id | Laman: sumbarprov.go.id</p>
+          <p style="margin: 0; font-size: 10pt; font-style: italic;">Komplek Perkantoran Pemprov Lampung, Jl. Wolter Monginsidi No. 69, Teluk Betung, Bandar Lampung 35211</p>
+          <p style="margin: 0; font-size: 10pt;">Telepon: (0721) 481103 | Pos-el: bpkad@lampungprov.go.id | Laman: lampungprov.go.id</p>
         </div>
       </div>
 
       <div style="text-align: center; margin-bottom: 20px;">
         <h4 style="margin: 0; text-decoration: underline; font-size: 13pt; font-weight: bold;">BERITA ACARA REKAPITULASI INVENTARISASI BARANG MILIK DAERAH (BMD) IDLE</h4>
-        <p style="margin: 4px 0 0; font-size: 10pt;">Nomor: 028/BPKAD-ASET/REKAP-IDLE/${new Date().getFullYear()}</p>
+        <p style="margin: 4px 0 0; font-size: 10pt;">Nomor: 028/BPKAD-ASET/REKAP-IDLE/LAMPUNG/${new Date().getFullYear()}</p>
       </div>
 
       <p style="font-size: 10pt; text-align: justify; margin-bottom: 15px;">
-        Pada hari ini, tanggal <strong>${currentDate}</strong>, berdasarkan hasil penatausahaan dan rekonsiliasi berkala terhadap Barang Milik Daerah (BMD) di lingkungan Pemerintah Provinsi Sumatera Barat sesuai amanat Permendagri No. 47 Tahun 2021 tentang Tata Cara Pelaksanaan Pembukuan, Inventarisasi, dan Pelaporan BMD, berikut disampaikan rincian objek aset yang berada dalam kondisi tidak digunakan / belum dioptimalkan (<em>Aset Idle</em>):
+        Pada hari ini, tanggal <strong>${currentDate}</strong>, berdasarkan hasil penatausahaan dan rekonsiliasi berkala terhadap Barang Milik Daerah (BMD) di lingkungan Pemerintah Provinsi Lampung sesuai amanat Permendagri No. 47 Tahun 2021 tentang Tata Cara Pelaksanaan Pembukuan, Inventarisasi, dan Pelaporan BMD, berikut disampaikan rincian objek aset yang berada dalam kondisi tidak digunakan / belum dioptimalkan (<em>Aset Idle</em>):
       </p>
 
       <table style="width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 25px;" border="1">
@@ -1254,15 +1254,15 @@ function printOfficialReport() {
           <p style="margin: 0;">Mengetahui,</p>
           <p style="margin: 0; font-weight: bold;">Kepala Bidang Pengelolaan Aset Daerah</p>
           <div style="height: 70px;"></div>
-          <p style="margin: 0; font-weight: bold; text-decoration: underline;">Drs. H. MULYADI, M.Si</p>
-          <p style="margin: 0;">NIP. 19740512 199903 1 004</p>
+          <p style="margin: 0; font-weight: bold; text-decoration: underline;">Drs. H. AHMAD SYAFEI, M.Si</p>
+          <p style="margin: 0;">NIP. 19740615 199903 1 003</p>
         </div>
         <div style="text-align: center; width: 45%;">
-          <p style="margin: 0;">Padang, ${currentDate}</p>
+          <p style="margin: 0;">Bandar Lampung, ${currentDate}</p>
           <p style="margin: 0; font-weight: bold;">Sekretaris Daerah Selaku Pengelola BMD</p>
           <div style="height: 70px;"></div>
-          <p style="margin: 0; font-weight: bold; text-decoration: underline;">Drs. HANSALDI PUTRA, S.E., M.M.</p>
-          <p style="margin: 0;">NIP. 19710820 199602 1 002</p>
+          <p style="margin: 0; font-weight: bold; text-decoration: underline;">Ir. FAHRIZAL DARMINTO, M.A.</p>
+          <p style="margin: 0;">NIP. 19641021 199003 1 002</p>
         </div>
       </div>
     </div>
@@ -1332,30 +1332,30 @@ function downloadTemplateCSV() {
 
   const sampleRows = [
     [
-      "AST-NEW-01",
+      "AST-LPG-NEW-01",
       "01.01.11.05.001",
-      "Lahan Cadangan UPTD Balai Benih Induk",
+      "Lahan Cadangan UPTD Balai Benih Induk Tegineneng",
       "KIB A - Tanah",
-      "Dinas Perkebunan, Tanaman Pangan dan Hortikultura",
-      "Kab. Agam",
-      "Lubuk Basung",
-      "Jl. Pertanian Nagari Manggopoh",
+      "Dinas Ketahanan Pangan, Tanaman Pangan dan Hortikultura",
+      "Kab. Pesawaran",
+      "Tegineneng",
+      "Jl. Lintas Sumatera Desa Bumi Agung",
       "7500",
       "3500000000",
       "8500000000",
       "220000000",
       "Siap Kemitraan (KSP/BGS)",
-      "SHP Pemprov No. 09/Manggopoh",
+      "SHP Pemprov Lampung No. 09/Tegineneng",
       "Bersertifikat Resmi",
       "Lahan Terbuka Terpagar",
       "2015",
       "Pengurangan plot pembibitan tanaman pangan",
-      "Rencana KSP sentra pembibitan alpukat & durian unggul",
-      "-0.3120",
-      "100.0150",
+      "Rencana KSP sentra pembibitan alpukat siger & kakao unggul",
+      "-5.2120",
+      "105.1850",
       "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=80",
       "Ir. Rinaldi (Kasie Produksi)",
-      "0812-7711-2233"
+      "0812-7911-2233"
     ]
   ];
 
@@ -1402,7 +1402,7 @@ function handleCSVImport(event) {
             namaBarang: row[2],
             kategori: row[3] || "KIB A - Tanah",
             namaOpd: row[4] || "Badan Pengelolaan Keuangan dan Aset Daerah",
-            kabKota: row[5] || "Kota Padang",
+            kabKota: row[5] || "Kota Bandar Lampung",
             kecamatan: row[6] || "",
             alamat: row[7] || "Lokasi Aset",
             luas: Number(row[8]) || 1000,
@@ -1418,8 +1418,8 @@ function handleCSVImport(event) {
             alasanIdle: row[17] || "Hasil rekonsiliasi data inventarisasi baru",
             rencanaAksi: row[18] || "Penyusunan kajian pemanfaatan pihak ketiga",
             koordinat: [
-              parseFloat(row[19]) || -0.9471 + (Math.random() * 0.1 - 0.05),
-              parseFloat(row[20]) || 100.4172 + (Math.random() * 0.1 - 0.05)
+              parseFloat(row[19]) || -5.3852 + (Math.random() * 0.1 - 0.05),
+              parseFloat(row[20]) || 105.2789 + (Math.random() * 0.1 - 0.05)
             ],
             foto: row[21] || "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=80",
             pjPenatausahaan: row[22] || "Bidang Aset BPKAD",

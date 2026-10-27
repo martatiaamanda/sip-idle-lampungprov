@@ -8,7 +8,7 @@ set -e
 echo ""
 echo "======================================================================"
 echo " 🏛️  SIP-IDLE PROV - Deployment Helper ke Vercel"
-echo " Pemerintah Provinsi Sumatera Barat - BPKAD"
+echo " Pemerintah Provinsi Lampung - BPKAD"
 echo "======================================================================"
 echo ""
 

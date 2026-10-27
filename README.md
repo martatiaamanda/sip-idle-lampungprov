@@ -1,8 +1,8 @@
 # SIP-IDLE PROV — Sistem Informasi Pencatatan & Pemantauan Aset Daerah Idle
 
-**Pemerintah Provinsi Sumatera Barat — Badan Pengelolaan Keuangan dan Aset Daerah (BPKAD)**
+**Pemerintah Provinsi Lampung — Badan Pengelolaan Keuangan dan Aset Daerah (BPKAD)**
 
-Aplikasi web dashboard komprehensif untuk inventarisasi, pemantauan, dan optimalisasi Barang Milik Daerah (BMD) yang berada dalam kondisi tidak digunakan / belum dioptimalkan (*aset idle*) di lingkungan Pemerintah Provinsi. Desain dan arsitektur portal ini mengacu pada tata kelola keterbukaan informasi dan dashboard monitoring aset daerah seperti **dashboard_aset.sumbarprov.go.id** (SIMBAR-PROV).
+Aplikasi web dashboard komprehensif untuk inventarisasi, pemantauan, dan optimalisasi Barang Milik Daerah (BMD) yang berada dalam kondisi tidak digunakan / belum dioptimalkan (*aset idle*) di lingkungan Pemerintah Provinsi Lampung. Desain dan arsitektur portal ini mengacu pada tata kelola transparansi dan dashboard monitoring inventarisasi aset daerah BPKAD.
 
 ---
 
@@ -13,10 +13,10 @@ Aplikasi web dashboard komprehensif untuk inventarisasi, pemantauan, dan optimal
 - **Estimasi Nilai Wajar / NJOP**: Nilai pasar aset hasil penilaian appraisal / BPKAD.
 - **Total Luas Lahan**: Agregasi luas tanah idle dalam satuan m² dan Hektar (Ha).
 - **Potensi PAD / Tahun**: Estimasi penerimaan retribusi daerah melalui skema sewa atau Kerja Sama Pemanfaatan (KSP).
-- **Rasio Pengamanan & Legalitas**: Persentase aset yang telah memiliki Sertifikat Hak Pakai (SHP) atas nama Pemerintah Provinsi.
+- **Rasio Pengamanan & Legalitas**: Persentase aset yang telah memiliki Sertifikat Hak Pakai (SHP) atas nama Pemerintah Provinsi Lampung.
 
 ### 2. 🗺️ Peta Geospasial Interaktif (GIS Leaflet)
-- Pemetaan titik lokasi koordinat GPS aset se-Kabupaten/Kota di Sumatera Barat (Padang, Bukittinggi, Payakumbuh, Solok, Agam, Pesisir Selatan, Pariaman, dll.).
+- Pemetaan titik lokasi koordinat GPS aset se-Kabupaten/Kota di Provinsi Lampung (Bandar Lampung, Metro, Lampung Selatan, Lampung Tengah, Lampung Timur, Lampung Utara, Pesisir Barat, Tanggamus, dll.).
 - Penanda warna dinamis berdasarkan klasifikasi KIB (KIB A Tanah, KIB B Mesin, KIB C Bangunan, KIB D Jaringan).
 - Pin Popup interaktif menampilkan foto kondisi lapangan, estimasi nilai, dan tautan langsung ke **Google Maps Navigation** dan **Dossier Detail Aset**.
 
@@ -96,7 +96,7 @@ Buka peramban di: `http://localhost:8080`
 Belajar/
 ├── index.html          # Halaman utama dashboard, visualisasi, dan modal dialog
 ├── css/
-│   └── custom.css      # Desain tema resmi Pemprov Sumbar, styling badge, popup map & layout cetak
+│   └── custom.css      # Desain tema resmi Pemprov Lampung, styling badge, popup map & layout cetak
 ├── js/
 │   ├── data.js         # Master data 12+ objek aset realistis, daftar OPD, dan wilayah
 │   └── app.js          # Logika aplikasi (Chart.js, Leaflet GIS, Filter, CRUD, Export CSV, Print)
