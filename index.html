@@ -68,12 +68,24 @@
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-4 text-slate-300 text-xs hidden md:flex flex-shrink-0">
-        <span><i class="fa fa-calendar-alt text-emerald-400 mr-1"></i> Tahun Anggaran 2026</span>
-        <span><i class="fa fa-shield-alt text-emerald-400 mr-1"></i> Data Terverifikasi BPKAD</span>
+      <div class="flex items-center gap-3 text-slate-300 text-xs flex-shrink-0">
+        <span class="hidden lg:inline"><i class="fa fa-calendar-alt text-emerald-400 mr-1"></i> TA 2026</span>
+        <!-- Accessibility Toolbar -->
+        <div class="flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded border border-white/10">
+          <button onclick="adjustFontSize(-1)" title="Perkecil Ukuran Teks" class="px-1 hover:text-white font-bold text-[11px]">A-</button>
+          <span class="text-white/30 text-[10px]">|</span>
+          <button onclick="adjustFontSize(1)" title="Perbesar Ukuran Teks" class="px-1 hover:text-white font-bold text-[11px]">A+</button>
+          <span class="text-white/30 text-[10px]">|</span>
+          <button onclick="toggleDarkMode()" title="Ganti Mode Gelap / Terang" class="px-1 hover:text-amber-300 transition">
+            <i id="dark-mode-icon" class="fa fa-moon text-slate-300"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Hidden CSV File Input -->
+  <input type="file" id="csv-file-input" accept=".csv" onchange="handleCSVImport(event)" class="hidden">
 
   <!-- MAIN HEADER -->
   <header class="bg-gov-pattern text-white shadow-lg sticky top-0 z-40">
@@ -104,6 +116,11 @@
         <button onclick="openFormModal()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white rounded-lg text-xs font-semibold shadow-md transition transform active:scale-95 border border-emerald-400/30">
           <i class="fa fa-plus-circle text-emerald-200"></i>
           <span>Catat Aset Baru</span>
+        </button>
+
+        <button onclick="triggerCSVUpload()" class="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-medium backdrop-blur-sm transition border border-white/10" title="Impor Data Aset dari File CSV">
+          <i class="fa fa-file-import text-blue-300"></i>
+          <span class="hidden md:inline">Impor CSV</span>
         </button>
 
         <button onclick="exportToCSV()" class="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-medium backdrop-blur-sm transition border border-white/10" title="Unduh Data CSV">
@@ -488,11 +505,37 @@
               <i class="fa fa-table-list text-emerald-700"></i>
               Buku Inventaris Barang Milik Daerah (BMD) Dalam Kondisi Idle
             </h2>
-            <p class="text-xs text-slate-500">Standar Pengkodean Permendagri No. 47 Tahun 2021</p>
+            <p class="text-xs text-slate-500">Standar Pengkodean Permendagri No. 47 Tahun 2021 &bull; Tekan tombol <kbd class="px-1.5 py-0.5 bg-slate-200 border rounded font-mono text-[10px] text-slate-700">/</kbd> untuk pencarian cepat</p>
           </div>
           <div class="flex items-center gap-2">
-            <span id="table-info" class="text-xs font-medium text-slate-600">Menampilkan 0 data</span>
+            <button onclick="downloadTemplateCSV()" class="px-2.5 py-1.5 text-xs bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-lg font-medium shadow-sm transition flex items-center gap-1.5">
+              <i class="fa fa-download text-emerald-600"></i> Template CSV
+            </button>
+            <span id="table-info" class="text-xs font-medium text-slate-600 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200">Menampilkan 0 data</span>
           </div>
+        </div>
+
+        <!-- Quick Status Pills Filter Bar -->
+        <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center gap-2 overflow-x-auto no-scrollbar">
+          <span class="text-xs text-slate-500 font-semibold flex-shrink-0 mr-1"><i class="fa fa-tag text-slate-400"></i> Status Cepat:</span>
+          <button onclick="setQuickStatusFilter('Semua Status')" data-status="Semua Status" class="quick-status-pill px-3 py-1 text-xs font-bold rounded-full bg-emerald-700 text-white shadow-sm transition flex-shrink-0">
+            Semua
+          </button>
+          <button onclick="setQuickStatusFilter('Siap Kemitraan (KSP/BGS)')" data-status="Siap Kemitraan (KSP/BGS)" class="quick-status-pill px-3 py-1 text-xs font-semibold rounded-full bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition flex-shrink-0">
+            Siap KSP/BGS
+          </button>
+          <button onclick="setQuickStatusFilter('Siap Sewa UMKM/Swasta')" data-status="Siap Sewa UMKM/Swasta" class="quick-status-pill px-3 py-1 text-xs font-semibold rounded-full bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition flex-shrink-0">
+            Siap Sewa
+          </button>
+          <button onclick="setQuickStatusFilter('Proses Kajian Kelayakan')" data-status="Proses Kajian Kelayakan" class="quick-status-pill px-3 py-1 text-xs font-semibold rounded-full bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition flex-shrink-0">
+            Proses Kajian
+          </button>
+          <button onclick="setQuickStatusFilter('Dalam Pengamanan Fisik & Legalitas')" data-status="Dalam Pengamanan Fisik & Legalitas" class="quick-status-pill px-3 py-1 text-xs font-semibold rounded-full bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition flex-shrink-0">
+            Pengamanan Fisik
+          </button>
+          <button onclick="setQuickStatusFilter('Usulan Pemindahtanganan/Lelang KPKNL')" data-status="Usulan Pemindahtanganan/Lelang KPKNL" class="quick-status-pill px-3 py-1 text-xs font-semibold rounded-full bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition flex-shrink-0">
+            Usulan Lelang
+          </button>
         </div>
 
         <!-- Responsive Table Container -->

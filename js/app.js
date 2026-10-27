@@ -1291,3 +1291,248 @@ function showToast(message) {
   }, 3500);
 }
 
+// ==========================================
+// FITUR TAMBAHAN: IMPORT CSV, AKSESIBILITAS, SHORTCUT
+// ==========================================
+
+// Trigger file input dialog
+function triggerCSVUpload() {
+  const fileInput = document.getElementById('csv-file-input');
+  if (fileInput) fileInput.click();
+}
+
+// Download Standard CSV Template
+function downloadTemplateCSV() {
+  const templateHeaders = [
+    "ID Aset",
+    "Kode Barang",
+    "Nama Barang / Objek Aset",
+    "Klasifikasi KIB",
+    "OPD Pengurus",
+    "Kabupaten / Kota",
+    "Kecamatan",
+    "Alamat",
+    "Luas (m2)",
+    "Nilai Perolehan (Rp)",
+    "Estimasi Nilai Wajar (Rp)",
+    "Potensi PAD per Tahun (Rp)",
+    "Status Penggunaan / Idle",
+    "Legalitas",
+    "Status Sertifikat",
+    "Kondisi Fisik",
+    "Tahun Perolehan",
+    "Alasan Idle",
+    "Rencana Optimalisasi",
+    "Latitude",
+    "Longitude",
+    "URL Foto",
+    "Penanggung Jawab",
+    "Kontak"
+  ];
+
+  const sampleRows = [
+    [
+      "AST-NEW-01",
+      "01.01.11.05.001",
+      "Lahan Cadangan UPTD Balai Benih Induk",
+      "KIB A - Tanah",
+      "Dinas Perkebunan, Tanaman Pangan dan Hortikultura",
+      "Kab. Agam",
+      "Lubuk Basung",
+      "Jl. Pertanian Nagari Manggopoh",
+      "7500",
+      "3500000000",
+      "8500000000",
+      "220000000",
+      "Siap Kemitraan (KSP/BGS)",
+      "SHP Pemprov No. 09/Manggopoh",
+      "Bersertifikat Resmi",
+      "Lahan Terbuka Terpagar",
+      "2015",
+      "Pengurangan plot pembibitan tanaman pangan",
+      "Rencana KSP sentra pembibitan alpukat & durian unggul",
+      "-0.3120",
+      "100.0150",
+      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=80",
+      "Ir. Rinaldi (Kasie Produksi)",
+      "0812-7711-2233"
+    ]
+  ];
+
+  const csvContent = "data:text/csv;charset=utf-8,\uFEFF"
+    + [templateHeaders.join(","), ...sampleRows.map(r => r.map(c => `"${c}"`).join(","))].join("\n");
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "Template_Import_Aset_Idle_BPKAD.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast("Template CSV Import berhasil diunduh");
+}
+
+// Handle CSV File Upload & Parsing
+function handleCSVImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const text = e.target.result;
+      const lines = text.split(/\r\n|\n/).filter(line => line.trim().length > 0);
+      
+      if (lines.length < 2) {
+        alert("File CSV tidak memiliki baris data!");
+        return;
+      }
+
+      let importedCount = 0;
+      // Skip header line (index 0)
+      for (let i = 1; i < lines.length; i++) {
+        // Simple regex to parse CSV taking into account quotes
+        const match = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+        const row = lines[i].split(',').map(item => item.replace(/^"|"$/g, '').trim());
+
+        if (row.length >= 6 && row[2]) {
+          const newAsset = {
+            id: row[0] || `AST-${String(appState.assets.length + 1).padStart(3, '0')}`,
+            kodeBarang: row[1] || `01.01.11.08.${Math.floor(100 + Math.random()*900)}`,
+            namaBarang: row[2],
+            kategori: row[3] || "KIB A - Tanah",
+            namaOpd: row[4] || "Badan Pengelolaan Keuangan dan Aset Daerah",
+            kabKota: row[5] || "Kota Padang",
+            kecamatan: row[6] || "",
+            alamat: row[7] || "Lokasi Aset",
+            luas: Number(row[8]) || 1000,
+            satuanLuas: "m²",
+            nilaiPerolehan: Number(row[9]) || 1000000000,
+            nilaiWajar: Number(row[10]) || 2000000000,
+            potensiPAD: Number(row[11]) || 100000000,
+            status: row[12] || "Proses Kajian Kelayakan",
+            legalitas: row[13] || "Dalam Proses Sertifikasi",
+            statusSertifikat: row[14] || "Bersertifikat Resmi",
+            kondisiFisik: row[15] || "Baik",
+            tahunPerolehan: Number(row[16]) || 2020,
+            alasanIdle: row[17] || "Hasil rekonsiliasi data inventarisasi baru",
+            rencanaAksi: row[18] || "Penyusunan kajian pemanfaatan pihak ketiga",
+            koordinat: [
+              parseFloat(row[19]) || -0.9471 + (Math.random() * 0.1 - 0.05),
+              parseFloat(row[20]) || 100.4172 + (Math.random() * 0.1 - 0.05)
+            ],
+            foto: row[21] || "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=80",
+            pjPenatausahaan: row[22] || "Bidang Aset BPKAD",
+            kontakPJ: row[23] || "0812-3456-7890",
+            dokumen: "BAST-Import-2026.pdf"
+          };
+
+          appState.assets.unshift(newAsset);
+          importedCount++;
+        }
+      }
+
+      if (importedCount > 0) {
+        saveToStorage();
+        renderAllViews();
+        showToast(`Berhasil mengimpor ${importedCount} data aset idle ke sistem!`);
+      } else {
+        alert("Gagal membaca baris data CSV. Pastikan format kolom sesuai template.");
+      }
+    } catch (err) {
+      console.error("Error import CSV:", err);
+      alert("Terjadi kesalahan saat memproses file CSV: " + err.message);
+    }
+  };
+
+  reader.readAsText(file);
+  event.target.value = ""; // Reset file input
+}
+
+// Quick Status Filter Pills
+function setQuickStatusFilter(status) {
+  appState.filters.status = status;
+  const statusSelect = document.getElementById('filter-status');
+  if (statusSelect) statusSelect.value = status;
+  appState.pagination.page = 1;
+  renderTable();
+  renderMap();
+
+  // Update quick pills style
+  document.querySelectorAll('.quick-status-pill').forEach(pill => {
+    if (pill.getAttribute('data-status') === status) {
+      pill.className = "quick-status-pill px-3 py-1 text-xs font-bold rounded-full bg-emerald-700 text-white shadow-sm transition";
+    } else {
+      pill.className = "quick-status-pill px-3 py-1 text-xs font-semibold rounded-full bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition";
+    }
+  });
+}
+
+// Modal Detail Tab Switcher
+function switchDetailModalTab(tabName) {
+  document.querySelectorAll('.detail-tab-btn').forEach(btn => {
+    if (btn.getAttribute('data-modal-tab') === tabName) {
+      btn.className = "detail-tab-btn px-4 py-2 text-xs font-bold text-emerald-800 border-b-2 border-emerald-700 transition";
+    } else {
+      btn.className = "detail-tab-btn px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition";
+    }
+  });
+
+  document.querySelectorAll('.detail-tab-pane').forEach(pane => {
+    if (pane.id === `detail-pane-${tabName}`) {
+      pane.classList.remove('hidden');
+    } else {
+      pane.classList.add('hidden');
+    }
+  });
+}
+
+// Accessibility Tools: Font Size Adjuster
+let currentFontSizeLevel = 0; // -1: small, 0: normal, 1: large
+function adjustFontSize(delta) {
+  currentFontSizeLevel += delta;
+  if (currentFontSizeLevel > 2) currentFontSizeLevel = 2;
+  if (currentFontSizeLevel < -1) currentFontSizeLevel = -1;
+
+  const html = document.documentElement;
+  if (currentFontSizeLevel === 1) {
+    html.style.fontSize = '17px';
+    showToast("Ukuran teks: Sedang (+1)");
+  } else if (currentFontSizeLevel === 2) {
+    html.style.fontSize = '18.5px';
+    showToast("Ukuran teks: Besar (+2)");
+  } else if (currentFontSizeLevel === -1) {
+    html.style.fontSize = '14.5px';
+    showToast("Ukuran teks: Kecil (-1)");
+  } else {
+    html.style.fontSize = '16px';
+    showToast("Ukuran teks: Standar");
+  }
+}
+
+// Accessibility Tools: Dark Mode Toggle
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle('dark-theme');
+  localStorage.setItem('sip_idle_dark_mode', isDark ? 'true' : 'false');
+  
+  const icon = document.getElementById('dark-mode-icon');
+  if (icon) {
+    icon.className = isDark ? "fa fa-sun text-amber-300" : "fa fa-moon text-slate-300";
+  }
+  showToast(isDark ? "Mode Gelap Diaktifkan" : "Mode Terang Diaktifkan");
+}
+
+// Keyboard Shortcut: Press "/" to focus search
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+    e.preventDefault();
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+      switchTab('list');
+      searchInput.focus();
+      searchInput.select();
+    }
+  }
+});
+
+
