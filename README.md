@@ -49,14 +49,36 @@ Aplikasi web dashboard komprehensif untuk inventarisasi, pemantauan, dan optimal
 
 ---
 
-## 🚀 Cara Menjalankan Aplikasi
+## 🚀 Cara Menjalankan & Deploy ke Vercel
 
-Aplikasi dibangun menggunakan teknologi modern berbasis *browser-native* tanpa dependensi build tools yang rumit:
+### Opsi 1: Deploy Langsung ke Vercel (Online Gratis)
+Proyek ini sudah dilengkapi konfigurasi [`vercel.json`](file:///Users/kartupetaniberjaya/Downloads/Belajar/vercel.json) dan Git repository lokal:
 
-### Opsi 1: Buka Langsung di Web Browser
+#### Cara A: Menggunakan GitHub (Paling Mudah)
+1. Buat repository baru di [GitHub](https://github.com/new) (misal: `sip-idle-pemprov`).
+2. Hubungkan repository lokal ini ke GitHub dengan perintah:
+   ```bash
+   git remote add origin https://github.com/<USERNAME-ANDA>/sip-idle-pemprov.git
+   git branch -M main
+   git push -u origin main
+   ```
+3. Buka [Vercel Dashboard](https://vercel.com/dashboard) -> klik tombol **"Add New..."** -> pilih **"Project"**.
+4. Pilih repository `sip-idle-pemprov` yang baru dibuat -> klik **"Deploy"**.
+5. Dalam 15 detik, website langsung aktif online dengan URL resmi `https://sip-idle-pemprov.vercel.app` (gratis dengan SSL/HTTPS).
+
+#### Cara B: Menggunakan Vercel CLI
+Jika komputer Anda memiliki Node.js / Vercel CLI:
+```bash
+npm install -g vercel
+vercel
+```
+
+---
+
+### Opsi 2: Buka Langsung di Web Browser Lokal
 Cukup klik dua kali (*double click*) file `index.html` pada File Explorer / Finder macOS untuk membuka langsung di Google Chrome, Safari, Firefox, atau Edge.
 
-### Opsi 2: Menggunakan Local Web Server (Python)
+### Opsi 3: Menggunakan Local Web Server (Python)
 Buka terminal dan jalankan server lokal:
 
 ```bash
