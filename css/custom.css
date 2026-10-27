@@ -1,0 +1,182 @@
+/* Custom Styling for Sistem Informasi Pencatatan Aset Idle Daerah (SIP-IDLE PROV) */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700&display=swap');
+
+:root {
+  --primary-gov: #0a4d34;
+  --primary-gov-dark: #063423;
+  --primary-gov-light: #106b49;
+  --gold-accent: #c48a19;
+  --gold-light: #fef3c7;
+  --slate-dark: #0f172a;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Official Gradient Header */
+.bg-gov-pattern {
+  background-color: #073826;
+  background-image: 
+    radial-gradient(at 10% 20%, rgba(16, 107, 73, 0.7) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, rgba(196, 138, 25, 0.25) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, rgba(6, 52, 35, 0.9) 0px, transparent 50%);
+}
+
+.bg-gov-subtle {
+  background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 100%);
+}
+
+/* Badge styles */
+.badge-kib-a {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+.badge-kib-b {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+.badge-kib-c {
+  background-color: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+.badge-kib-d {
+  background-color: #f5f3ff;
+  color: #5b21b6;
+  border: 1px solid #ddd6fe;
+}
+
+/* Status Badges */
+.badge-status-siap-ksp {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+.badge-status-siap-sewa {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #7dd3fc;
+}
+.badge-status-kajian {
+  background-color: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fde047;
+}
+.badge-status-pengamanan {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+.badge-status-pinjam {
+  background-color: #ede9fe;
+  color: #6d28d9;
+  border: 1px solid #c4b5fd;
+}
+.badge-status-lelang {
+  background-color: #f3e8ff;
+  color: #7e22ce;
+  border: 1px solid #d8b4fe;
+}
+
+/* Leaflet Map Customization */
+#map {
+  width: 100%;
+  height: 520px;
+  border-radius: 0.75rem;
+  z-index: 10;
+}
+
+.custom-map-popup .leaflet-popup-content-wrapper {
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-map-popup .leaflet-popup-content {
+  margin: 0;
+  line-height: 1.5;
+  width: 280px !important;
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Ticker text */
+@keyframes tickerAnimation {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.ticker-wrap {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ticker-move {
+  display: inline-block;
+  white-space: nowrap;
+  animation: tickerAnimation 40s linear infinite;
+}
+
+.ticker-move:hover {
+  animation-play-state: paused;
+}
+
+/* Modal animation */
+.modal-overlay {
+  transition: opacity 0.25s ease;
+}
+
+.modal-container {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* Official Print Preview Styling */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #print-area, #print-area * {
+    visibility: visible;
+  }
+  #print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    background: white;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+

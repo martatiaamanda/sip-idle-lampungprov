@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIP-IDLE PROV | Sistem Informasi Pencatatan Aset Daerah Idle - BPKAD Pemerintah Provinsi</title>
+  <meta name="description" content="Dashboard Inventarisasi dan Optimalisasi Barang Milik Daerah (BMD) Dalam Kondisi Tidak Digunakan / Idle Pemerintah Provinsi Sumatera Barat">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://ditjenpktn.kemendag.go.id/storage/webconfig/V6QvuT4trifcVUV7Zh7ZTKkezTudgcjGtkKTTbNl.png">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gov: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#0a4d34',
+              900: '#063423'
+            },
+            gold: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#c48a19'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- Leaflet CSS & JS for Interactive GIS Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Chart.js for Data Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+
+  <!-- TOP TICKER BAR -->
+  <div class="bg-gov-900 text-white text-xs py-1.5 px-4 border-b border-emerald-800">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3 overflow-hidden flex-1 mr-4">
+        <span class="bg-gold-600 text-gov-900 font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider flex-shrink-0">
+          Warta Aset
+        </span>
+        <div class="ticker-wrap flex-1 text-slate-300">
+          <div class="ticker-move">
+            📌 Rekonsiliasi Triwulan II Inventarisasi BMD Idle se-Provinsi Sumatera Barat telah dimulai &bull; 
+            🏢 12 Objek Aset Idle Strategis Siap Ditawarkan dengan Skema KSP (Kerja Sama Pemanfaatan) untuk Optimalisasi PAD &bull; 
+            ⚖️ Pedoman Pengelolaan BMD Mengacu pada Permendagri No. 47 Tahun 2021 & Perda Pengelolaan Aset Daerah &bull; 
+            ✅ Integrasi Data SIMBAR-PROV dengan Aplikasi e-HAPUS BMD Terus Ditingkatkan.
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 text-slate-300 text-xs hidden md:flex flex-shrink-0">
+        <span><i class="fa fa-calendar-alt text-emerald-400 mr-1"></i> Tahun Anggaran 2026</span>
+        <span><i class="fa fa-shield-alt text-emerald-400 mr-1"></i> Data Terverifikasi BPKAD</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN HEADER -->
+  <header class="bg-gov-pattern text-white shadow-lg sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Logo and Titles -->
+      <div class="flex items-center gap-3.5">
+        <div class="w-12 h-12 bg-white/10 rounded-xl p-1.5 border border-white/20 shadow-inner flex items-center justify-center backdrop-blur-sm">
+          <img src="https://ditjenpktn.kemendag.go.id/storage/webconfig/V6QvuT4trifcVUV7Zh7ZTKkezTudgcjGtkKTTbNl.png" alt="Lambang Daerah" class="max-h-full max-w-full drop-shadow">
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold tracking-widest text-emerald-300 uppercase">Pemerintah Provinsi Sumatera Barat</span>
+            <span class="text-white/40 text-xs">•</span>
+            <span class="text-[10px] font-medium text-amber-300">BPKAD</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+            SIP-IDLE <span class="text-gold-400 font-light text-base sm:text-lg">PROV</span>
+          </h1>
+          <p class="text-xs text-slate-300 font-medium hidden sm:block">
+            Sistem Informasi Pencatatan &amp; Optimalisasi Aset Daerah Idle (BMD Tidak Digunakan)
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center gap-2.5">
+        <button onclick="openFormModal()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white rounded-lg text-xs font-semibold shadow-md transition transform active:scale-95 border border-emerald-400/30">
+          <i class="fa fa-plus-circle text-emerald-200"></i>
+          <span>Catat Aset Baru</span>
+        </button>
+
+        <button onclick="exportToCSV()" class="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-medium backdrop-blur-sm transition border border-white/10" title="Unduh Data CSV">
+          <i class="fa fa-file-excel text-emerald-300"></i>
+          <span class="hidden md:inline">Ekspor Excel</span>
+        </button>
+
+        <button onclick="printOfficialReport()" class="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-medium backdrop-blur-sm transition border border-white/10" title="Cetak Berita Acara Rekapitulasi">
+          <i class="fa fa-print text-amber-300"></i>
+          <span class="hidden md:inline">Cetak Rekap</span>
+        </button>
+
+        <div class="h-6 w-px bg-white/20 mx-1 hidden sm:block"></div>
+
+        <!-- User profile indicator -->
+        <div class="flex items-center gap-2 pl-1">
+          <div class="w-8 h-8 rounded-full bg-emerald-800 border border-emerald-400 flex items-center justify-center text-xs font-bold text-amber-300 shadow">
+            AD
+          </div>
+          <div class="text-left hidden lg:block">
+            <div class="text-xs font-semibold leading-tight text-white">Admin BPKAD</div>
+            <div class="text-[10px] text-emerald-300">Bidang Pengelolaan Aset</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Navigation Tabs Bar -->
+    <div class="bg-gov-900/80 backdrop-blur border-t border-emerald-800/60 px-4 sm:px-6">
+      <div class="max-w-7xl mx-auto flex items-center justify-between overflow-x-auto no-scrollbar">
+        <nav class="flex space-x-1 py-1" aria-label="Tabs">
+          <button data-tab-target="dashboard" class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-emerald-800 bg-white border-b-2 border-emerald-600 shadow-sm rounded-t-lg transition">
+            <i class="fa fa-chart-pie text-emerald-600"></i>
+            <span>Dashboard &amp; Statistik</span>
+          </button>
+          <button data-tab-target="map" class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-t-lg transition">
+            <i class="fa fa-map-marked-alt text-amber-400"></i>
+            <span>Peta Sebaran GIS</span>
+          </button>
+          <button data-tab-target="list" class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-t-lg transition">
+            <i class="fa fa-list-check text-blue-400"></i>
+            <span>Daftar &amp; Inventarisasi Aset</span>
+          </button>
+          <button data-tab-target="catalog" class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-t-lg transition">
+            <i class="fa fa-handshake text-emerald-400"></i>
+            <span>Peluang Kemitraan (KSP/Sewa)</span>
+          </button>
+          <button data-tab-target="reports" class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-t-lg transition">
+            <i class="fa fa-file-invoice text-purple-400"></i>
+            <span>Rekonsiliasi OPD &amp; Laporan</span>
+          </button>
+        </nav>
+
+        <div class="hidden sm:flex items-center gap-2 text-xs text-emerald-200">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="header-ready-badge">12 Aset Siap Kemitraan</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+    <!-- KPI STAT CARDS (Always Visible on Top) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      
+      <!-- Card 1: Total Aset Idle -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm hover:shadow transition relative overflow-hidden group">
+        <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-emerald-50 rounded-full group-hover:scale-125 transition duration-300"></div>
+        <div class="relative z-10 flex items-start justify-between">
+          <div>
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Aset Idle</span>
+            <div id="kpi-total-aset" class="text-2xl font-black text-slate-900 mt-1">12 Objek</div>
+            <p class="text-[11px] text-emerald-600 font-medium mt-1">
+              <i class="fa fa-arrow-up text-[10px]"></i> Termonitor BPKAD
+            </p>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-lg font-bold">
+            <i class="fa fa-boxes-stacked"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Estimasi Nilai Wajar / NJOP -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm hover:shadow transition relative overflow-hidden group">
+        <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-50 rounded-full group-hover:scale-125 transition duration-300"></div>
+        <div class="relative z-10 flex items-start justify-between">
+          <div>
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Nilai Wajar / Aset</span>
+            <div id="kpi-nilai-wajar" class="text-2xl font-black text-slate-900 mt-1">Rp 239.8 M</div>
+            <p class="text-[11px] text-amber-700 font-medium mt-1">
+              <i class="fa fa-coins text-[10px]"></i> Penilaian BPKAD &amp; KJPP
+            </p>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-lg font-bold">
+            <i class="fa fa-sack-dollar"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Total Luas Lahan Idle -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm hover:shadow transition relative overflow-hidden group">
+        <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-50 rounded-full group-hover:scale-125 transition duration-300"></div>
+        <div class="relative z-10 flex items-start justify-between">
+          <div>
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Luas Tanah Idle</span>
+            <div id="kpi-luas-lahan" class="text-2xl font-black text-slate-900 mt-1">89.650 m²</div>
+            <p class="text-[11px] text-blue-600 font-medium mt-1">
+              <i class="fa fa-vector-square text-[10px]"></i> Setara 8,96 Hektar
+            </p>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center text-lg font-bold">
+            <i class="fa fa-map"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Potensi PAD / Tahun -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm hover:shadow transition relative overflow-hidden group">
+        <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-green-50 rounded-full group-hover:scale-125 transition duration-300"></div>
+        <div class="relative z-10 flex items-start justify-between">
+          <div>
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Potensi PAD Baru</span>
+            <div id="kpi-potensi-pad" class="text-2xl font-black text-emerald-800 mt-1">Rp 4.04 M/th</div>
+            <p class="text-[11px] text-emerald-700 font-medium mt-1">
+              <i class="fa fa-hand-holding-dollar text-[10px]"></i> Skema Sewa &amp; KSP
+            </p>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-lg font-bold">
+            <i class="fa fa-chart-line"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Status Sertifikasi -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm hover:shadow transition relative overflow-hidden group">
+        <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-purple-50 rounded-full group-hover:scale-125 transition duration-300"></div>
+        <div class="relative z-10 flex items-start justify-between">
+          <div>
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Legalitas Fisik</span>
+            <div id="kpi-sertifikat-percent" class="text-2xl font-black text-slate-900 mt-1">92% Bersertifikat</div>
+            <p class="text-[11px] text-purple-600 font-medium mt-1">
+              <i class="fa fa-certificate text-[10px]"></i> SHP Pemprov Sumbar
+            </p>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-800 flex items-center justify-center text-lg font-bold">
+            <i class="fa fa-file-shield"></i>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FILTER & SEARCH PANEL (Available for table & map views) -->
+    <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm space-y-3">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2 text-slate-700 font-semibold text-sm">
+          <i class="fa fa-filter text-emerald-700"></i>
+          <span>Filter &amp; Pencarian Terpadu Aset Idle</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-reset-filter" class="text-xs text-slate-500 hover:text-emerald-700 font-medium flex items-center gap-1 transition">
+            <i class="fa fa-rotate-left"></i> Setel Ulang Filter
+          </button>
+          <span class="text-slate-300">|</span>
+          <button onclick="resetDefaultData()" class="text-xs text-amber-600 hover:text-amber-800 font-medium flex items-center gap-1 transition" title="Kembalikan data contoh awal">
+            <i class="fa fa-database"></i> Reset DB Contoh
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <!-- Search Keyword -->
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs">
+            <i class="fa fa-search"></i>
+          </span>
+          <input type="text" id="search-input" placeholder="Cari nama, kode, alamat..." class="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+        </div>
+
+        <!-- Filter OPD -->
+        <div>
+          <select id="filter-opd" class="w-full py-2 px-3 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition text-slate-700 font-medium">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <!-- Filter Kab/Kota -->
+        <div>
+          <select id="filter-kabkota" class="w-full py-2 px-3 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition text-slate-700 font-medium">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <!-- Filter Kategori KIB -->
+        <div>
+          <select id="filter-kategori" class="w-full py-2 px-3 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition text-slate-700 font-medium">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <!-- Filter Status -->
+        <div>
+          <select id="filter-status" class="w-full py-2 px-3 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition text-slate-700 font-medium">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB PANEL 1: DASHBOARD & STATISTIK -->
+    <div id="panel-dashboard" class="tab-content-panel space-y-6">
+      
+      <!-- Top Charts Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Chart 1: Sebaran Nilai & Unit per Kab/Kota -->
+        <div class="lg:col-span-2 bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                <i class="fa fa-chart-column text-emerald-700"></i>
+                Sebaran Objek &amp; Nilai Aset Idle per Kabupaten/Kota
+              </h3>
+              <p class="text-xs text-slate-500">Estimasi nilai wajar pasar (Miliar Rupiah) dan kuantitas unit</p>
+            </div>
+            <span class="text-[11px] bg-slate-100 px-2 py-1 rounded text-slate-600 font-medium">Wilayah Sumbar</span>
+          </div>
+          <div class="relative h-72 w-full">
+            <canvas id="chart-kabkota"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Komposisi Kategori Aset -->
+        <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                <i class="fa fa-chart-pie text-amber-600"></i>
+                Komposisi Kategori Aset (KIB)
+              </h3>
+              <p class="text-xs text-slate-500">Berdasarkan klasifikasi inventarisasi BMD</p>
+            </div>
+          </div>
+          <div class="relative h-60 w-full flex items-center justify-center">
+            <canvas id="chart-kategori"></canvas>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-600 pt-3 border-t border-slate-100 mt-2">
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> KIB A (Tanah)</div>
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> KIB B (Peralatan)</div>
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> KIB C (Gedung)</div>
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> KIB D (Jalan/Irigasi)</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Second Grid: Status Distribusi & Prioritas Optimalisasi -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Chart 3: Status Penanganan & Optimalisasi -->
+        <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                <i class="fa fa-pie-chart text-blue-600"></i>
+                Status Pemanfaatan / Tindak Lanjut
+              </h3>
+              <p class="text-xs text-slate-500">Kesiapan skema optimalisasi BMD</p>
+            </div>
+          </div>
+          <div class="relative h-56 w-full flex items-center justify-center">
+            <canvas id="chart-status"></canvas>
+          </div>
+        </div>
+
+        <!-- Highlight: Aset Prioritas Skema KSP / Sewa -->
+        <div class="lg:col-span-2 bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                <i class="fa fa-star text-gold-500"></i>
+                Top Aset Idle Strategis Siap Optimalisasi (Prioritas BPKAD)
+              </h3>
+              <p class="text-xs text-slate-500">Objek berpotensi tinggi menghasilkan Pendapatan Asli Daerah (PAD)</p>
+            </div>
+            <button onclick="switchTab('catalog')" class="text-xs text-emerald-700 hover:underline font-semibold">
+              Lihat Semua Katalog &rarr;
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            <!-- Item 1 -->
+            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-emerald-50/50 transition border border-slate-100">
+              <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=200&auto=format&fit=crop&q=80" alt="" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">KIB A - Tanah</span>
+                  <span class="text-xs font-semibold text-slate-800 truncate">Lahan Strategis Eks-Dinas Pertanian Khatib Sulaiman</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-0.5">Kota Padang &bull; Luas: 4.850 m² &bull; Potensi PAD: <span class="text-emerald-700 font-bold">Rp 950 Juta/th</span></div>
+              </div>
+              <button onclick="openDetailModal('AST-001')" class="px-3 py-1.5 text-xs bg-white border border-slate-200 hover:border-emerald-600 rounded-lg font-medium text-slate-700 shadow-sm transition">
+                Dossier
+              </button>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-emerald-50/50 transition border border-slate-100">
+              <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=200&auto=format&fit=crop&q=80" alt="" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">KIB C - Gedung</span>
+                  <span class="text-xs font-semibold text-slate-800 truncate">Gedung Eks Balai Latihan Kehutanan &amp; Mess Bukittinggi</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-0.5">Kota Bukittinggi (Panorama) &bull; Luas: 2.350 m² &bull; Potensi PAD: <span class="text-emerald-700 font-bold">Rp 480 Juta/th</span></div>
+              </div>
+              <button onclick="openDetailModal('AST-002')" class="px-3 py-1.5 text-xs bg-white border border-slate-200 hover:border-emerald-600 rounded-lg font-medium text-slate-700 shadow-sm transition">
+                Dossier
+              </button>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-emerald-50/50 transition border border-slate-100">
+              <img src="https://images.unsplash.com/photo-1524813686514-a57563d77d61?w=200&auto=format&fit=crop&q=80" alt="" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">KIB A - Tanah</span>
+                  <span class="text-xs font-semibold text-slate-800 truncate">Kawasan Lahan Terbuka Bypass KM 11 Aia Pacah</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-0.5">Kota Padang &bull; Luas: 16.200 m² &bull; Rencana: <span class="text-emerald-700 font-bold">Pusat Logistik / KSP BGS</span></div>
+              </div>
+              <button onclick="openDetailModal('AST-003')" class="px-3 py-1.5 text-xs bg-white border border-slate-200 hover:border-emerald-600 rounded-lg font-medium text-slate-700 shadow-sm transition">
+                Dossier
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB PANEL 2: PETA SEBARAN GIS -->
+    <div id="panel-map" class="tab-content-panel hidden space-y-4">
+      <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <i class="fa fa-map-marked-alt text-emerald-700"></i>
+              Peta Geospasial Interaktif Sebaran Aset Daerah Idle
+            </h2>
+            <p class="text-xs text-slate-500">Klik pin pada peta untuk menampilkan preview ringkas, estimasi nilai, dan dossier lengkap aset.</p>
+          </div>
+          <div class="flex items-center gap-3 text-xs">
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-500 border border-white shadow"></span> Tanah (KIB A)</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500 border border-white shadow"></span> Mesin (KIB B)</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-amber-500 border border-white shadow"></span> Gedung (KIB C)</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-purple-500 border border-white shadow"></span> Jaringan (KIB D)</span>
+          </div>
+        </div>
+
+        <!-- Map Container -->
+        <div id="map" class="shadow-inner border border-slate-200"></div>
+
+        <div class="mt-3 text-xs text-slate-500 flex items-center justify-between">
+          <span><i class="fa fa-info-circle text-emerald-600"></i> Koordinat disinkronkan dengan titik ukur batas kepemilikan BPN / Badan Pertanahan Nasional.</span>
+          <span class="text-slate-400">Peta Dasar: OpenStreetMap</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB PANEL 3: DAFTAR & INVENTARISASI ASET (TABEL) -->
+    <div id="panel-list" class="tab-content-panel hidden space-y-4">
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        
+        <div class="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-slate-50/70">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <i class="fa fa-table-list text-emerald-700"></i>
+              Buku Inventaris Barang Milik Daerah (BMD) Dalam Kondisi Idle
+            </h2>
+            <p class="text-xs text-slate-500">Standar Pengkodean Permendagri No. 47 Tahun 2021</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="table-info" class="text-xs font-medium text-slate-600">Menampilkan 0 data</span>
+          </div>
+        </div>
+
+        <!-- Responsive Table Container -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700 text-xs uppercase tracking-wider font-semibold border-b border-slate-200">
+                <th class="py-3 px-4 text-center w-12">No</th>
+                <th class="py-3 px-4 min-w-[260px]">Uraian Nama Aset / Kode KIB</th>
+                <th class="py-3 px-4 min-w-[200px]">OPD Pengurus / Lokasi</th>
+                <th class="py-3 px-4 min-w-[130px]">Luas &amp; Fisik</th>
+                <th class="py-3 px-4 min-w-[160px]">Nilai Wajar &amp; Potensi PAD</th>
+                <th class="py-3 px-4 min-w-[180px]">Status Optimalisasi</th>
+                <th class="py-3 px-4 text-center min-w-[110px]">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="asset-table-body" class="divide-y divide-slate-100 bg-white">
+              <!-- Dynamically populated via app.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="p-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
+          <div class="text-xs text-slate-500">
+            Dikelola oleh Bidang Pengelolaan Aset Daerah - BPKAD Provinsi Sumatera Barat
+          </div>
+          <div id="pagination-controls" class="flex items-center gap-1.5">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB PANEL 4: KATALOG PELUANG KEMITRAAN (INVESTOR / BUMD) -->
+    <div id="panel-catalog" class="tab-content-panel hidden space-y-4">
+      <div class="bg-gradient-to-r from-emerald-800 to-teal-900 rounded-2xl p-6 text-white shadow-md relative overflow-hidden">
+        <div class="relative z-10 max-w-2xl">
+          <span class="inline-block px-2.5 py-1 text-[11px] font-bold rounded bg-gold-500 text-slate-900 mb-2">
+            Peluang Pemanfaatan BMD 2026
+          </span>
+          <h2 class="text-xl sm:text-2xl font-black">Etalase Aset Daerah Siap Kemitraan &amp; Sewa</h2>
+          <p class="text-xs sm:text-sm text-emerald-100 mt-1 leading-relaxed">
+            Pemerintah Provinsi Sumatera Barat membuka peluang kerja sama pemanfaatan lahan dan bangunan milik daerah bagi pelaku usaha, BUMD, koperasi, dan UMKM melalui mekanisme Sewa, Bangun Guna Serah (BGS), dan Kerja Sama Pemanfaatan (KSP).
+          </p>
+        </div>
+        <div class="absolute right-4 bottom-2 opacity-15 text-white text-9xl pointer-events-none hidden md:block">
+          <i class="fa fa-handshake"></i>
+        </div>
+      </div>
+
+      <!-- Grid Cards -->
+      <div id="catalog-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Dynamically populated via app.js -->
+      </div>
+    </div>
+
+    <!-- TAB PANEL 5: REKONSILIASI OPD & LAPORAN -->
+    <div id="panel-reports" class="tab-content-panel hidden space-y-6">
+      
+      <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <i class="fa fa-file-invoice text-emerald-700"></i>
+              Rekapitulasi Aset Idle Menurut Organisasi Perangkat Daerah (OPD)
+            </h2>
+            <p class="text-xs text-slate-500">Hasil audit internal dan inventarisasi berkala semester berjalan</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="printOfficialReport()" class="px-3 py-1.5 text-xs bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-medium shadow-sm transition flex items-center gap-1.5">
+              <i class="fa fa-print"></i> Cetak Berita Acara Resmi
+            </button>
+            <button onclick="exportToCSV()" class="px-3 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium border border-slate-300 transition flex items-center gap-1.5">
+              <i class="fa fa-download"></i> Unduh Tabel
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700 text-xs uppercase tracking-wider font-semibold border-b border-slate-200">
+                <th class="py-2.5 px-3 text-center w-10">No</th>
+                <th class="py-2.5 px-3">Organisasi Perangkat Daerah (OPD)</th>
+                <th class="py-2.5 px-3 text-center">Jumlah Objek</th>
+                <th class="py-2.5 px-3 text-right">Total Luas</th>
+                <th class="py-2.5 px-3 text-right">Nilai Perolehan (Rp)</th>
+                <th class="py-2.5 px-3 text-right">Estimasi Nilai Wajar (Rp)</th>
+                <th class="py-2.5 px-3 text-right">Potensi PAD (Rp/th)</th>
+              </tr>
+            </thead>
+            <tbody id="report-summary-table" class="divide-y divide-slate-100 bg-white">
+              <!-- Dynamically populated via app.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bg-amber-50 rounded-lg p-4 border border-amber-200 text-xs text-amber-900 flex items-start gap-3">
+          <i class="fa fa-triangle-exclamation text-amber-600 text-base flex-shrink-0 mt-0.5"></i>
+          <div>
+            <span class="font-bold">Ketentuan Pengelolaan Aset Idle:</span>
+            <p class="mt-0.5 text-amber-800 leading-relaxed">
+              Sesuai Pasal 112 Peraturan Pemerintah No. 27 Tahun 2014 jo. PP No. 28 Tahun 2020, Pengguna Barang (OPD) wajib menyerahkan tanah dan/atau bangunan yang tidak digunakan untuk menyelenggarakan tugas dan fungsi OPD bersangkutan kepada Pengelola Barang (Sekretaris Daerah melalui BPKAD). Pelanggaran terhadap penahanan aset idle dapat dikenai sanksi administratif dan evaluasi pemotongan pagu pemeliharaan.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 text-slate-400 text-xs mt-12 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        
+        <div class="space-y-3 md:col-span-2">
+          <div class="flex items-center gap-3">
+            <img src="https://ditjenpktn.kemendag.go.id/storage/webconfig/V6QvuT4trifcVUV7Zh7ZTKkezTudgcjGtkKTTbNl.png" alt="Logo Pemprov" class="w-10 h-10 object-contain">
+            <div>
+              <div class="font-bold text-white text-sm">PEMERINTAH PROVINSI SUMATERA BARAT</div>
+              <div class="text-[11px] text-emerald-400 font-medium">Badan Pengelolaan Keuangan dan Aset Daerah (BPKAD)</div>
+            </div>
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed max-w-md">
+            Gedung Kantor Gubernur Sumatera Barat, Jl. Jenderal Sudirman No. 43, Kota Padang, Sumatera Barat 25129. Portal transparansi, monitoring, dan optimalisasi Barang Milik Daerah (BMD) idle guna peningkatan Pendapatan Asli Daerah (PAD).
+          </p>
+          <div class="flex items-center gap-4 text-slate-300 pt-1">
+            <span class="flex items-center gap-1.5"><i class="fa fa-phone text-emerald-400"></i> (0751) 31542</span>
+            <span class="flex items-center gap-1.5"><i class="fa fa-envelope text-emerald-400"></i> bpkad@sumbarprov.go.id</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-3">Sistem Terintegrasi</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa fa-angle-right text-emerald-500"></i> SIMBAR-PROV Sumbar</a></li>
+            <li><a href="#" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa fa-angle-right text-emerald-500"></i> e-HAPUS BMD (Penghapusan)</a></li>
+            <li><a href="#" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa fa-angle-right text-emerald-500"></i> SIPD Penatausahaan Keuangan</a></li>
+            <li><a href="#" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa fa-angle-right text-emerald-500"></i> Satu Data Sumatera Barat</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-3">Layanan Pengaduan</h4>
+          <p class="text-slate-400 leading-relaxed mb-3">
+            Masyarakat dapat melaporkan pemanfaatan ilegal atau penelantaran aset milik Pemprov Sumbar melalui kanal SP4N-LAPOR!.
+          </p>
+          <a href="https://www.lapor.go.id" target="_blank" class="inline-flex items-center gap-2 px-3 py-1.5 bg-red-700 hover:bg-red-800 text-white rounded text-xs font-semibold transition">
+            <i class="fa fa-bullhorn"></i> Laporkan Aset Terbengkalai
+          </a>
+        </div>
+
+      </div>
+
+      <div class="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-500 text-[11px]">
+        <div>
+          &copy; 2026 Badan Pengelolaan Keuangan dan Aset Daerah &bull; Pemerintah Provinsi Sumatera Barat. Seluruh hak cipta dilindungi undang-undang.
+        </div>
+        <div class="flex items-center gap-3">
+          <span>Keamanan Data Terverifikasi</span>
+          <span>&bull;</span>
+          <span>Permendagri No. 47/2021</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. DETAIL DOSSIER MODAL -->
+  <div id="modal-detail" class="fixed inset-0 z-50 overflow-y-auto hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl border border-slate-200 transform transition-all my-8 max-h-[90vh] flex flex-col">
+      
+      <!-- Modal Header -->
+      <div class="bg-gov-pattern text-white p-5 flex items-start justify-between relative">
+        <div class="pr-6">
+          <div class="flex items-center gap-2 mb-1">
+            <span id="modal-detail-kategori-badge" class="px-2.5 py-0.5 text-xs font-semibold rounded bg-white text-slate-800">
+              KIB A - Tanah
+            </span>
+            <span id="modal-detail-status-badge" class="px-2.5 py-0.5 text-xs font-semibold rounded bg-emerald-500 text-white">
+              Siap Kemitraan
+            </span>
+          </div>
+          <h2 id="modal-detail-title" class="text-lg sm:text-xl font-bold leading-snug">Nama Aset Daerah</h2>
+          <p id="modal-detail-kode" class="text-xs text-slate-300 font-mono mt-1">Kode: 01.01.11.04.001</p>
+        </div>
+        <button onclick="closeDetailModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition flex-shrink-0">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
+        
+        <!-- Image & Key Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="sm:col-span-1">
+            <img id="modal-detail-img" src="" alt="" class="w-full h-44 object-cover rounded-xl border border-slate-200 shadow-sm">
+          </div>
+          <div class="sm:col-span-2 grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <div>
+              <span class="text-slate-500 block">Organisasi Pengguna (OPD):</span>
+              <span id="modal-detail-opd" class="font-bold text-slate-800 block text-xs mt-0.5">-</span>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Luas Objek / Fisik:</span>
+              <span id="modal-detail-luas" class="font-bold text-slate-800 block text-xs mt-0.5">-</span>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Estimasi Nilai Wajar / NJOP:</span>
+              <span id="modal-detail-nilai-wajar" class="font-bold text-emerald-800 block text-xs mt-0.5">-</span>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Potensi Penerimaan PAD:</span>
+              <span id="modal-detail-potensi-pad" class="font-bold text-emerald-600 block text-xs mt-0.5">-</span>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Kondisi Fisik:</span>
+              <span id="modal-detail-kondisi" class="font-semibold text-slate-700 block text-xs mt-0.5">-</span>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Tahun Perolehan:</span>
+              <span id="modal-detail-tahun" class="font-semibold text-slate-700 block text-xs mt-0.5">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alamat & Lokasi -->
+        <div class="space-y-1">
+          <h4 class="font-bold text-slate-800 flex items-center gap-1.5">
+            <i class="fa fa-map-pin text-red-500"></i> Lokasi Administratif
+          </h4>
+          <p id="modal-detail-alamat" class="text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-200">-</p>
+        </div>
+
+        <!-- Legalitas & Sertifikat -->
+        <div class="space-y-1">
+          <h4 class="font-bold text-slate-800 flex items-center gap-1.5">
+            <i class="fa fa-certificate text-amber-500"></i> Status Kepemilikan &amp; Dokumen Legalitas
+          </h4>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex items-center justify-between">
+            <div>
+              <div id="modal-detail-legalitas" class="font-medium text-slate-800">-</div>
+              <div id="modal-detail-sertifikat-status" class="text-emerald-700 font-semibold mt-0.5">-</div>
+            </div>
+            <span class="px-2.5 py-1 text-[11px] bg-white border border-slate-200 rounded font-medium text-slate-600">
+              <i class="fa fa-file-pdf text-red-500 mr-1"></i> BAST Tersedia
+            </span>
+          </div>
+        </div>
+
+        <!-- Alasan Idle & Rencana Tindak Lanjut -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-red-50/60 p-3.5 rounded-xl border border-red-100">
+            <h4 class="font-bold text-red-900 mb-1 flex items-center gap-1.5">
+              <i class="fa fa-circle-question text-red-600"></i> Faktor Penyebab Idle
+            </h4>
+            <p id="modal-detail-alasan" class="text-red-800 leading-relaxed">-</p>
+          </div>
+          <div class="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-100">
+            <h4 class="font-bold text-emerald-900 mb-1 flex items-center gap-1.5">
+              <i class="fa fa-lightbulb text-emerald-600"></i> Rencana Aksi / Rekomendasi
+            </h4>
+            <p id="modal-detail-rencana" class="text-emerald-800 leading-relaxed">-</p>
+          </div>
+        </div>
+
+        <!-- Narahubung Penatausahaan -->
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex items-center justify-between">
+          <div>
+            <span class="text-slate-500 block">Penanggung Jawab Penatausahaan:</span>
+            <div id="modal-detail-pj" class="font-bold text-slate-800 mt-0.5">-</div>
+          </div>
+          <div class="text-right">
+            <span class="text-slate-500 block">Kontak / Pos-el:</span>
+            <div id="modal-detail-kontak" class="font-bold text-emerald-700 mt-0.5">-</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3">
+        <a id="modal-detail-gmaps-link" href="#" target="_blank" class="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+          <i class="fa fa-location-arrow text-blue-600"></i>
+          <span>Buka di Google Maps</span>
+        </a>
+
+        <div class="flex items-center gap-2">
+          <button id="modal-detail-edit-btn" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+            <i class="fa fa-pencil-alt"></i> Edit Aset
+          </button>
+          <button onclick="closeDetailModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition">
+            Tutup
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. FORM TAMBAH / EDIT ASET MODAL -->
+  <div id="modal-form" class="fixed inset-0 z-50 overflow-y-auto hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl border border-slate-200 my-8 max-h-[90vh] flex flex-col">
+      
+      <div class="bg-gov-pattern text-white p-5 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <i class="fa fa-file-pen text-xl text-emerald-300"></i>
+          <h2 id="modal-form-title" class="text-base sm:text-lg font-bold">Catat Objek Aset Daerah Idle Baru</h2>
+        </div>
+        <button onclick="closeFormModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+
+      <form id="asset-form" class="flex-1 overflow-y-auto p-6 space-y-4 text-xs">
+        <input type="hidden" id="form-asset-id" value="">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Kode Barang (KIB) *</label>
+            <input type="text" id="form-kode" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="Misal: 01.01.11.04.001">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Klasifikasi KIB *</label>
+            <select id="form-kategori" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Nama Barang / Objek Aset *</label>
+          <input type="text" id="form-nama" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="Misal: Lahan Eks-Dinas Pertanian Khatib Sulaiman">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">OPD Pengurus / Pengguna Barang *</label>
+            <select id="form-opd" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Kabupaten / Kota *</label>
+            <select id="form-kabkota" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Kecamatan</label>
+            <input type="text" id="form-kecamatan" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="Misal: Padang Utara">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Alamat Lengkap</label>
+            <input type="text" id="form-alamat" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="Jl. Khatib Sulaiman No. 84">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Luas (m²) *</label>
+            <input type="number" id="form-luas" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="4850">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Nilai Perolehan (Rp)</label>
+            <input type="number" id="form-nilai-perolehan" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="1000000000">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Nilai Wajar / NJOP *</label>
+            <input type="number" id="form-nilai-wajar" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="2500000000">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Potensi PAD (Rp/th)</label>
+            <input type="number" id="form-potensi-pad" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="200000000">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Status Optimalisasi *</label>
+            <select id="form-status" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Kondisi Fisik</label>
+            <select id="form-kondisi" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs">
+              <option value="Baik / Matang">Baik / Matang</option>
+              <option value="Rusak Ringan">Rusak Ringan</option>
+              <option value="Rusak Sedang">Rusak Sedang</option>
+              <option value="Rusak Berat">Rusak Berat</option>
+              <option value="Lahan Terbuka Terpagar">Lahan Terbuka Terpagar</option>
+              <option value="Bersemak Belukar">Bersemak Belukar</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Tahun Perolehan</label>
+            <input type="number" id="form-tahun" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="2012">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Status Sertifikat</label>
+            <select id="form-status-sertifikat" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs">
+              <option value="Bersertifikat Resmi">Bersertifikat Resmi (SHP Pemprov)</option>
+              <option value="Dalam Proses BPN">Dalam Proses BPN</option>
+              <option value="Dokumen Pembelian Lengkap">Dokumen Pembelian Lengkap</option>
+              <option value="Belum Bersertifikat">Belum Bersertifikat</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Uraian Legalitas / No. Sertifikat</label>
+            <input type="text" id="form-legalitas" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="SHP Pemprov No. 18 Tahun 2004">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Alasan Idle / Tidak Digunakan *</label>
+          <textarea id="form-alasan" required rows="2" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="Jelaskan alasan mengapa aset ini menganggur atau belum dimanfaatkan..."></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Rencana Aksi / Rekomendasi Tindak Lanjut *</label>
+          <textarea id="form-rencana" required rows="2" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="Rencana skema sewa, KSP, lelang, pinjam pakai, sertifikasi..."></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Titik Koordinat (Latitude &amp; Longitude)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="form-lat" placeholder="Lat (-0.912)" class="p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-xs">
+              <input type="text" id="form-lng" placeholder="Lng (100.358)" class="p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-xs">
+            </div>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">URL Foto Aset Lapangan</label>
+            <input type="url" id="form-foto-url" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:bg-white text-xs" placeholder="https://...">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Nama Pejabat / Pengurus Aset</label>
+            <input type="text" id="form-pj" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-xs" placeholder="Drs. Mulyadi (Kabid Aset)">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Nomor Kontak / WhatsApp</label>
+            <input type="text" id="form-kontak" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-xs" placeholder="0812-xxxx-xxxx">
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
+          <button type="button" onclick="closeFormModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold transition">
+            Batal
+          </button>
+          <button type="submit" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold shadow-md transition">
+            Simpan Pencatatan Aset
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- 3. PERMOHONAN MINAT KEMITRAAN (LETTER OF INTENT) MODAL -->
+  <div id="modal-interest" class="fixed inset-0 z-50 overflow-y-auto hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-200">
+      
+      <div class="bg-gov-pattern text-white p-5 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa fa-handshake text-xl text-amber-300"></i>
+          <h2 class="text-base font-bold">Surat Pernyataan Minat (Letter of Intent)</h2>
+        </div>
+        <button onclick="closeInterestModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+
+      <form id="interest-form" class="p-5 space-y-4 text-xs">
+        <input type="hidden" id="interest-asset-id" value="">
+
+        <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+          <span class="text-slate-500 block">Objek Aset yang Diminati:</span>
+          <div id="interest-asset-name" class="font-bold text-slate-800 text-sm mt-0.5">-</div>
+          <div id="interest-asset-luas" class="text-emerald-700 font-medium text-xs mt-0.5">-</div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Nama Pemohon / Penanggung Jawab *</label>
+          <input type="text" id="interest-nama" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs" placeholder="Nama Lengkap">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Nama Perusahaan / BUMD / Koperasi *</label>
+          <input type="text" id="interest-institusi" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs" placeholder="PT / CV / Koperasi / Perorangan">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Nomor Telepon / WA *</label>
+            <input type="tel" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs" placeholder="0812-xxxx-xxxx">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Email Perusahaan *</label>
+            <input type="email" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs" placeholder="kontak@perusahaan.com">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Rencana Bentuk Kerja Sama *</label>
+          <select required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs">
+            <option value="Sewa BMD (1 s/d 5 Tahun)">Sewa BMD (1 s/d 5 Tahun)</option>
+            <option value="Kerja Sama Pemanfaatan (KSP) s/d 30 Tahun">Kerja Sama Pemanfaatan (KSP) s/d 30 Tahun</option>
+            <option value="Bangun Guna Serah (BGS) / BSG">Bangun Guna Serah (BGS) / BSG</option>
+            <option value="Kerja Sama Penyediaan Infrastruktur (KSPI)">Kerja Sama Penyediaan Infrastruktur (KSPI)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Ringkasan Rencana Penggunaan / Bisnis</label>
+          <textarea rows="2" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs" placeholder="Rencana peruntukan (restoran, hotel, pergudangan, pusat UMKM, dsb)..."></textarea>
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeInterestModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition">
+            Batal
+          </button>
+          <button type="submit" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold shadow-md transition">
+            Kirimkan Pernyataan Minat
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- PRINT REPORT CONTAINER (Hidden by default, visible during window.print()) -->
+  <div id="print-area"></div>
+
+  <!-- Application Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
